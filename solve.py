@@ -200,46 +200,40 @@ class Basic:
             return round(math.sec(math.radians(exp)), self.round_digit)
 
     def asin(self, exp):
-        solution = round(math.asin(exp), self.round_digit)
         if self.rad:
-            return solution
+            return round(math.asin(exp), self.round_digit)
         else:
-            return math.degrees(solution)
+            return round(math.degrees(math.asin(exp)), self.round_digit)
 
     def acos(self, exp):
-        solution = round(math.asin(exp), self.round_digit)
         if self.rad:
-            return solution
+            return round(math.acos(exp), self.round_digit)
         else:
-            return math.degrees(solution)
+            return round(math.degrees(math.acos(exp)), self.round_digit)
 
     def atan(self, exp):
-        solution = round(math.asin(exp), self.round_digit)
         if self.rad:
-            return solution
+            return round(math.atan(exp), self.round_digit)
         else:
-            return math.degrees(solution)
+            return round(math.degrees(math.atan(exp)), self.round_digit)
 
     def acosec(self, exp):
-        solution = round(math.asin(exp), self.round_digit)
         if self.rad:
-            return solution
+            return round(math.acosec(exp), self.round_digit)
         else:
-            return math.degrees(solution)
+            return round(math.degrees(math.acosec(exp)), self.round_digit)
 
     def acot(self, exp):
-        solution = round(math.asin(exp), self.round_digit)
         if self.rad:
-            return solution
+            return round(math.acot(exp), self.round_digit)
         else:
-            return math.degrees(solution)
+            return round(math.degrees(math.acot(exp)), self.round_digit)
 
     def asec(self, exp):
-        solution = round(math.asin(exp), self.round_digit)
         if self.rad:
-            return solution
+            return round(math.asec(exp), self.round_digit)
         else:
-            return math.degrees(solution)
+            return round(math.degrees(math.asec(exp)), self.round_digit)
 
     def log(self, exp):
         return round(math.log(exp, self.base))

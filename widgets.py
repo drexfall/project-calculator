@@ -1,19 +1,13 @@
 import string
-
-from kivy.animation import Animation
+import re
+from kivy.animation import Animation, Parallel
 from kivy.clock import Clock
 from kivy.core.text.markup import MarkupLabel
 from kivy.core.window import Window
 from kivy.graphics import Color, Rectangle
 from kivy.metrics import dp
-from kivy.properties import (
-    BooleanProperty,
-    ColorProperty,
-    ListProperty,
-    NumericProperty,
-    ObjectProperty,
-    StringProperty,
-)
+from kivy.properties import (BooleanProperty, ColorProperty, ListProperty,
+                             NumericProperty, ObjectProperty, StringProperty)
 from kivy.uix.behaviors.touchripple import TouchRippleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -28,14 +22,10 @@ from kivymd.app import MDApp
 from kivymd.uix.behaviors import HoverBehavior
 from kivymd.uix.button import MDIconButton
 from kivymd.uix.card import MDCard
-from kivymd.uix.list import (
-    CheckboxLeftWidget,
-    IconLeftWidget,
-    IRightBodyTouch,
-    MDList,
-    OneLineAvatarIconListItem,
-    TwoLineAvatarIconListItem,
-)
+from kivymd.uix.list import (CheckboxLeftWidget, IconLeftWidget,
+                             IRightBodyTouch, MDList,
+                             OneLineAvatarIconListItem,
+                             TwoLineAvatarIconListItem)
 from kivymd.uix.picker import MDDatePicker
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.swiper import MDSwiperItem
@@ -43,17 +33,9 @@ from kivymd.uix.textfield import MDTextField
 from kivymd.uix.toolbar import MDToolbar
 from kivymd.utils.fitimage import FitImage
 
+from properties import (color, config_data, current_page, days_number, hover,
+                        symbol, theme_image, write_history)
 from solve import Basic, Convert
-from properties import (
-    color,
-    config_data,
-    current_page,
-    days_number,
-    hover,
-    symbol,
-    theme_image,
-    write_history,
-)
 
 
 class ItemConfirm(OneLineAvatarIconListItem):
@@ -78,14 +60,12 @@ class TextField(MDTextField):
 
     def on_focus(self, *args):
         super().on_focus(*args)
-        if not args[1] and str(type(self.parent.parent.parent).__name__) == "ListItem":
-            self.parent.parent.parent.parent.selected.update(
-                {
-                    self.title: int(args[0].text)
-                    if self.title != "base"
-                    else args[0].text
-                }
-            )
+        if not args[1] and str(type(
+                self.parent.parent.parent).__name__) == "ListItem":
+            self.parent.parent.parent.parent.selected.update({
+                self.title:
+                int(args[0].text) if self.title != "base" else args[0].text
+            })
 
     def insert_text(self, substring, from_undo):
         if self.title == "history_length" and substring not in string.digits:
@@ -112,6 +92,8 @@ class TextField(MDTextField):
                 self.error = True
             else:
                 self.error = False
+        elif str(type(self.parent).__name__) == "PassText":
+            return
         else:
             self.parent.parent.parent.search_func(text)
 
@@ -120,11 +102,9 @@ class TextField(MDTextField):
         self.color_mode = "custom"
 
         self.line_color_normal = color(
-            f"images/{theme_image[config_data['theme']][2]}.png"
-        )
+            f"images/{theme_image[config_data['theme']][2]}.png")
         self.line_color_focus = color(
-            f"images/{theme_image[config_data['theme']][0]}.png"
-        )
+            f"images/{theme_image[config_data['theme']][0]}.png")
         self.error_color = self.line_color_focus
 
 
@@ -153,7 +133,8 @@ class Drop(ModalView):
             self.layout.remove_widget(self.search_box)
         else:
             self.layout.add_widget(self.search_box, index=1)
-            Clock.schedule_once(lambda dt: setattr(self.search, "focus", True), 0.1)
+            Clock.schedule_once(lambda dt: setattr(self.search, "focus", True),
+                                0.1)
 
     def refresh(self, *args):
         self.options_layout.clear_widgets()
@@ -162,10 +143,8 @@ class Drop(ModalView):
 
             self.options_layout.add_widget(options_button)
             options_button.check_box.bind(
-                on_release=lambda options_button=options_button: self.options_select(
-                    options_button
-                )
-            )
+                on_release=lambda options_button=options_button: self.
+                options_select(options_button))
         self.temp = list(self.values)
         self.temp.reverse()
         try:
@@ -174,9 +153,11 @@ class Drop(ModalView):
             self.selection = -1
         if self.values:
             try:
-                self.options_layout.children[self.selection].check_box.state = "down"
+                self.options_layout.children[
+                    self.selection].check_box.state = "down"
                 if self.value not in self.values:
-                    self.value = self.options_layout.children[self.selection].text
+                    self.value = self.options_layout.children[
+                        self.selection].text
             except:
                 self.options_layout.children[-1].check_box.state = "down"
                 if self.value not in self.values:
@@ -193,13 +174,13 @@ class Drop(ModalView):
             self.default = self.values[0]
         self.refresh()
 
-        self.toolbar = MDToolbar(title=self.title, anchor_title="center", elevation=10)
+        self.toolbar = MDToolbar(title=self.title,
+                                 anchor_title="center",
+                                 elevation=10)
         self.toolbar.md_bg_color = color(
-            f"images/{theme_image[config_data['theme']][2]}.png"
-        )
+            f"images/{theme_image[config_data['theme']][2]}.png")
         self.toolbar.specific_text_color = color(
-            f"images/{theme_image[config_data['theme']][0]}.png"
-        )
+            f"images/{theme_image[config_data['theme']][0]}.png")
         self.search_box = MyBoxLayout(padding=[20, 0], size_hint_y=0.2)
         self.search = TextField(padding_x=10)
         self.search_box.add_widget(self.search)
@@ -227,7 +208,8 @@ class ListItem(TwoLineAvatarIconListItem):
     def __init__(self, **kwargs):
         super(ListItem, self).__init__(**kwargs)
         self.theme_text_color = self.secondary_theme_text_color = "Custom"
-        self.text_color = color(f"images/{theme_image[config_data['theme']][0]}.png")
+        self.text_color = color(
+            f"images/{theme_image[config_data['theme']][0]}.png")
         self.secondary_text_color = self.text_color[:3] + [0.7]
         self.container = Container()
         self.ids._right_container.width = self.container.width * self.width_mult
@@ -240,23 +222,17 @@ class ListItem(TwoLineAvatarIconListItem):
 class MButton(TouchRippleButtonBehavior, Button):
 
     background_disabled_normal = StringProperty(
-        f"images/{theme_image[config_data['theme']][2]}.png"
-    )
+        f"images/{theme_image[config_data['theme']][2]}.png")
     background_down = StringProperty(
-        f"images/{theme_image[config_data['theme']][1]}.png"
-    )
+        f"images/{theme_image[config_data['theme']][1]}.png")
     background_normal = StringProperty(
-        f"images/{theme_image[config_data['theme']][2]}.png"
-    )
+        f"images/{theme_image[config_data['theme']][2]}.png")
     bold = BooleanProperty(False)
-    color = ColorProperty(color(f"images/{theme_image[config_data['theme']][0]}.png"))
+    color = ColorProperty(
+        color(f"images/{theme_image[config_data['theme']][0]}.png"))
     hover = BooleanProperty(True)
-    hover_image = StringProperty(f"images/{theme_image[config_data['theme']][1]}.png")
-    icon = StringProperty(None)
-    icon_opacity = NumericProperty(1)
-    icon_padding = NumericProperty(10)
-    icon_rotation = NumericProperty(0)
-    icon_size = ObjectProperty((30, 30))
+    hover_image = StringProperty(
+        f"images/{theme_image[config_data['theme']][1]}.png")
     modal_button = BooleanProperty(False)
     old_font_size = NumericProperty(9)
     ripple = BooleanProperty(True)
@@ -266,6 +242,7 @@ class MButton(TouchRippleButtonBehavior, Button):
     ripple_rad_default = NumericProperty(5)
     state_enable = BooleanProperty(True)
     toggle_state = BooleanProperty(False)
+    font_resize = BooleanProperty(True)
 
     def on_disabled(self, instance, value):
         pass
@@ -316,7 +293,8 @@ class MButton(TouchRippleButtonBehavior, Button):
     def mouse_pos(self, window, pos, **kwargs):
         if self.state == "down":
             return
-        if not hover[0] and not self.modal_button or self.disabled or not self.hover:
+        if not hover[
+                0] and not self.modal_button or self.disabled or not self.hover:
             self.background_normal = self.old_image
             self.color = self.color_
             return
@@ -330,7 +308,10 @@ class MButton(TouchRippleButtonBehavior, Button):
             self.background_normal = self.old_image
 
     def on_size(self, *args):
-        change = (self.size[0] * 0.5 + self.size[1] * 0.5) * self.old_font_size * 0.01
+        if not self.font_resize:
+            return
+        change = (self.size[0] * 0.5 +
+                  self.size[1] * 0.5) * self.old_font_size * 0.01
         max_size = 20
         self.font_size = min(change, max_size)
 
@@ -345,7 +326,8 @@ class MButton(TouchRippleButtonBehavior, Button):
             1 - self.color[2],
             self.color[3],
         )
-        self.ripple_color = color(f"images/{theme_image[config_data['theme']][3]}.png")
+        self.ripple_color = color(
+            f"images/{theme_image[config_data['theme']][3]}.png")
         if not self.hover:
             self.hover_image = self.background_normal
 
@@ -355,14 +337,11 @@ class MButton(TouchRippleButtonBehavior, Button):
 
 class Text(TextInput):
     foreground_color = ListProperty(
-        color(f"images/{theme_image[config_data['theme']][0]}.png")
-    )
+        color(f"images/{theme_image[config_data['theme']][0]}.png"))
     background_active = StringProperty(
-        f"images/{theme_image[config_data['theme']][2]}.png"
-    )
+        f"images/{theme_image[config_data['theme']][2]}.png")
     cursor_color = ListProperty(
-        color(f"images/{theme_image[config_data['theme']][0]}.png")
-    )
+        color(f"images/{theme_image[config_data['theme']][0]}.png"))
     cursor_width = dp(5)
     from_unit = StringProperty()
     minimum_width = NumericProperty(1)
@@ -394,15 +373,13 @@ class Text(TextInput):
             view_end = view_start + self.parent.width
             offset = self.cursor_offset()
             desired_view_start = offset - 5
-            desired_view_end = (
-                offset + self.padding[0] + self.padding[2] + self.cursor_width + 5
-            )
+            desired_view_end = (offset + self.padding[0] + self.padding[2] +
+                                self.cursor_width + 5)
             if desired_view_start < view_start:
                 self.parent.scroll_x = max(0, desired_view_start / over_width)
             elif desired_view_end > view_end:
                 self.parent.scroll_x = min(
-                    1, (desired_view_end - self.parent.width) / over_width
-                )
+                    1, (desired_view_end - self.parent.width) / over_width)
         return super(Text, self).on_cursor(instance, newPos)
 
     def replace(self, exp):
@@ -413,7 +390,7 @@ class Text(TextInput):
         exp = exp.replace("ceil", "math.ceil")
         exp = exp.replace("floor", "math.floor")
         exp = exp.replace("\u03c0", "math.pi")
-        exp = exp.replace("e","math.e")
+        exp = exp.replace("e", "math.e")
         return exp
 
     def fac_solve(self, exp):
@@ -424,7 +401,8 @@ class Text(TextInput):
         for x_index, x in enumerate(exp):
             if "!" in x:
                 if x[-1] == "!":
-                    exp[x_index] = "math.factorial({})".format(x.replace("!", ""))
+                    exp[x_index] = "math.factorial({})".format(
+                        x.replace("!", ""))
                 else:
                     return "symbol error"
 
@@ -445,8 +423,7 @@ class Text(TextInput):
             else:
                 self.do_backspace()
             return
-        
-            
+
         if substring == "*":
             substring = "x"
 
@@ -461,25 +438,29 @@ class Text(TextInput):
 
         if substring == "ceil":
             if self.selection_text:
-                self.text = self.text.replace(self.selection_text,f"ceil({self.selection_text})")
+                self.text = self.text.replace(self.selection_text,
+                                              f"ceil({self.selection_text})")
             else:
                 self.text = f"ceil({self.text})"
             return
         if substring == "|a|":
             if self.selection_text:
-                self.text = self.text.replace(self.selection_text,f"abs({self.selection_text})")
+                self.text = self.text.replace(self.selection_text,
+                                              f"abs({self.selection_text})")
             else:
                 self.text = f"abs({self.text})"
             return
         if substring == "floor":
             if self.selection_text:
-                self.text = self.text.replace(self.selection_text,f"floor({self.selection_text})")
+                self.text = self.text.replace(self.selection_text,
+                                              f"floor({self.selection_text})")
             else:
                 self.text = f"floor({self.text})"
             return
         if substring == "\u221aa":
             if self.selection_text:
-                self.text = self.text.replace(self.selection_text,f"sqrt({self.selection_text})")
+                self.text = self.text.replace(self.selection_text,
+                                              f"sqrt({self.selection_text})")
             else:
                 self.text = f"sqrt({self.text})"
             return
@@ -487,8 +468,8 @@ class Text(TextInput):
         if substring == "a!":
             substring = "!"
 
-        if substring == str(config_data['base'])+'\u00aa':
-            substring = str(config_data['base'])+'^'
+        if substring == str(config_data['base']) + '\u00aa':
+            substring = str(config_data['base']) + '^'
 
         if self.last_press in "+-÷x^%\u00b1":
             if self.last_press == substring:
@@ -500,30 +481,33 @@ class Text(TextInput):
         if substring in "÷x^" and (self.text == "0" or not self.text):
             return
 
-        if (
-            (
-                current_page[0] == "standard"
-                and substring not in string.digits + "%()+-x÷^.!=\r\n"
-                and substring != "^2"
-            )
-            or (
-                current_page[0] == "scientific"
-                and substring not in string.digits + "%()e+-x÷^.!sincotae=\r\n"
-                and substring != "^2"
-                and substring not in ['sin','cos','tan','cosec','cot','sec','log']
-                and substring not in ['sin\u00af\u00b9','cos\u00af\u00b9','tan\u00af\u00b9','cosec\u00af\u00b9','cot\u00af\u00b9','sec\u00af\u00b9']
-                and substring != str(config_data['base']+'^')
-                and substring != '\u03c0'
-            )
-            or (
-                current_page[0] == "convert"
-                and substring not in string.digits + ".=\r\n"
-            )
-            or (current_page[0] == "days" and substring not in string.digits + "=\r\n")
-        ):
+        if ((current_page[0] == "standard"
+             and substring not in string.digits + "%()+-x÷^.!=\r\npass"
+             and substring != "^2") or
+            (current_page[0] == "scientific"
+             and substring not in string.digits + "%()e+-x÷^.!sincotae=\r\n"
+             and substring != "^2" and substring
+             not in ['sin', 'cos', 'tan', 'cosec', 'cot', 'sec', 'log']
+             and substring not in [
+                 'sin\u00af\u00b9', 'cos\u00af\u00b9', 'tan\u00af\u00b9',
+                 'cosec\u00af\u00b9', 'cot\u00af\u00b9', 'sec\u00af\u00b9'
+             ] and substring != str(config_data['base'] + '^')
+             and substring != '\u03c0')
+                or (current_page[0] == "convert"
+                    and substring not in string.digits + ".=\r\n")
+                or (current_page[0] == "days"
+                    and substring not in string.digits + "=\r\n")):
             return
         self.last_press = substring
         if substring in ["\r", "\n", "="]:
+            if self.text == 'pass':
+                self.text = ''
+                self.page.parent.parent.parent.parent.options_open(self.page.layout.buttons[-1][-1])
+                self.modal_pass = ModalView(size_hint=(0.8, 0.8))
+                self.modal_pass.add_widget(Pass())
+                self.modal_pass.open()
+                self.modal_pass.bind(on_dismiss = lambda *args:self.page.parent.parent.parent.parent.options_close())
+                return
             if self.text[-1] in "+-÷x^(%":
                 self.page.preview.text = "Complete the equation first!"
                 return
@@ -546,8 +530,7 @@ class Text(TextInput):
                     substring = Basic(exp=substring).solution
                 except:
                     self.page.preview.text = (
-                        "There's some error, could you check please?"
-                    )
+                        "There's some error!")
                     return
             elif current_page[0] == "scientific":
                 substring = self.text
@@ -555,15 +538,18 @@ class Text(TextInput):
                 if "!" in substring:
                     substring = self.fac_solve(substring)
 
-                rad = 1 if self.page.layout.buttons[0][2].state == "down" else 0
+                rad = 1 if self.page.layout.buttons[0][2].text == "RAD" else 0
                 for r in ["sin", "tan", "cos", "cot", "cosec", "sec"]:
                     substring = substring.replace(r, f"Basic(rad={rad}).{r}")
-                for r in ["sin\u00af\u00b9", "tan\u00af\u00b9", "cos\u00af\u00b9", "cot\u00af\u00b9", "cosec\u00af\u00b9", "sec\u00af\u00b9"]:
+                for r in [
+                        "sin\u00af\u00b9", "tan\u00af\u00b9",
+                        "cos\u00af\u00b9", "cot\u00af\u00b9",
+                        "cosec\u00af\u00b9", "sec\u00af\u00b9"
+                ]:
                     r1 = r.replace("\u00af\u00b9", "")
                     substring = substring.replace(r, f"a{r1}")
                 substring = substring.replace(
-                    "log", f"Basic(base={config_data['base']}).log"
-                )
+                    "log", f"Basic(base={config_data['base']}).log")
                 from math import factorial
 
                 try:
@@ -573,22 +559,13 @@ class Text(TextInput):
                     return
             elif current_page[0] == "convert":
                 try:
-                    substring = (
-                        str(
-                            eval("Convert." + self.quantity)(
-                                self.text.split()[0], self.from_unit, self.to_unit
-                            )
-                        )
-                        + " "
-                        + self.to_unit
-                    )
-                    self.page.preview.text = (
-                        "[ref=self.old_text]"
-                        + self.text
-                        + " "
-                        + self.from_unit
-                        + "[/ref]"
-                    )
+                    substring = (str(
+                        eval("Convert." + self.quantity)
+                        (self.text.split()[0], self.from_unit, self.to_unit)) +
+                                 " " + self.to_unit)
+                    self.page.preview.text = ("[ref=self.old_text]" +
+                                              self.text + " " +
+                                              self.from_unit + "[/ref]")
                 except:
                     self.page.preview.text = "There's some error!"
                     return
@@ -609,9 +586,8 @@ class Text(TextInput):
                     return
             self.solved = True
             write_history(
-                self.page.preview.text
-                if current_page[0] == "days"
-                else MarkupLabel(self.page.preview.text).markup[1],
+                self.page.preview.text if current_page[0] == "days" else
+                MarkupLabel(self.page.preview.text).markup[1],
                 substring,
                 current_page[0],
             )
@@ -620,7 +596,8 @@ class Text(TextInput):
         if self.text == "0" and substring != ".":
             self.do_backspace()
         for sub_ in substring:
-            return super(Text, self).insert_text(substring, from_undo=from_undo)
+            return super(Text, self).insert_text(substring,
+                                                 from_undo=from_undo)
 
     def on_text(self, instance, newText):
 
@@ -667,7 +644,8 @@ class Text(TextInput):
 
 
 class MyBoxLayout(BoxLayout):
-    color = ListProperty(color(f"images/{theme_image[config_data['theme']][2]}.png"))
+    color = ListProperty(
+        color(f"images/{theme_image[config_data['theme']][2]}.png"))
 
     def on_size(self, *args):
         self.canvas.before.clear()
@@ -680,13 +658,96 @@ class Container(IRightBodyTouch, BoxLayout):
     adaptive_width = True
 
 
+class Pass(MyBoxLayout):
+    def check(self, text):
+        if text == "\n" or text == " ":
+            return "Password cannot be a space or nextline"
+        elif 8 > len(text):
+            return "Password should be atleast 8 characters"
+        strength = 100
+        
+        for list_ in ("[a-z]","[A-Z]","[0-9]","[!@#$)^%~+-/.,`]"):
+            regex = re.findall(list_,text)
+            for type_ in regex:
+                strength+=1
+            if not len(regex):
+                strength-=20
+        for index,x in enumerate(text):
+            prev1 = text[index-1 if index>1 else 0] if len(text)>0 else ''
+            prev2 = text[index-2 if index>2 else 0] if len(prev1)>0 else ''
+
+            if ord(x) in [ord(prev1)-1,ord(prev1),ord(prev2),ord(prev1)+1]:
+                strength-=8
+            else:
+                strength+=1
+            if ord(prev1) in [ord(prev2)-1,ord(x),ord(prev2),ord(prev2)+1]:
+                strength-=7
+            else:
+                strength+=1
+
+        if strength<0:
+            strength = 0
+        elif strength>100:
+            strength = 100
+            
+        return f"There's a {100-strength}% probability of your password being cracked."
+                  
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.orientation = 'vertical'
+        self.add_widget(MyBoxLayout(size_hint_y  = 0.2))
+
+        class PassText(MyBoxLayout):
+            input = ObjectProperty()
+            icon = StringProperty()
+
+            def change(self, *args):
+                print('hi')
+                self.input.hint_text = self.parent.check(self.input.text)
+                Clock.schedule_once(lambda dt: setattr(self.input,'focus',True),0.1)
+
+            def __init__(self, **kwargs):
+                super().__init__(**kwargs)
+                self.padding = [dp(30),0,dp(20),0]
+                self.input = TextField(halign='center',
+                                       password = True)
+                self.icon_button = Icon(icon=self.icon)
+                self.input.bind(on_text_validate=self.change)
+                
+                self.input.hint_text = "Type a password and check it's strength"
+                
+                self.icon_button.icon = "eye-off"
+                self.icon_button.bind(on_release = lambda button: setattr(button,'icon', "eye" if button.icon == "eye-off" else "eye-off"))
+                self.icon_button.bind(on_release = lambda button: setattr(self.input,'password', False if button.icon == "eye-off" else True))
+                self.input.current_hint_text_color = self.icon_button.text_color[:3]+[0.7]
+                self.input.bind(focus= lambda instance,value: setattr(self.input,'current_hint_text_color', self.icon_button.text_color[:3]+[1 if value else 0.7]))
+                self.add_widget(self.input)
+                self.add_widget(self.icon_button)
+
+        self.text_box = PassText()
+        self.submit = MButton(text='Check',
+                              size_hint=(0.2, None),
+                              height=dp(40),
+                              pos_hint={"center_x": 0.5},
+                              modal_button = True,
+                              font_resize = False,
+                              font_size = dp(16))
+        self.submit.bind(on_release=self.text_box.change)
+        self.add_widget(self.text_box)
+        self.add_widget(MyBoxLayout(size_hint_y = 0.3))
+        self.add_widget(self.submit)
+        self.add_widget(MyBoxLayout(size_hint_y = 0.5))
+
+
 class ClipButtons(MyBoxLayout):
     copy_button = ObjectProperty()
     cut_button = ObjectProperty()
     paste_button = ObjectProperty()
 
     def clip_action(self, *args, **kwargs):
-        input = self.parent.parent.parent.pages.current_screen.children[0].entry
+        input = self.parent.parent.parent.pages.current_screen.children[
+            0].entry
         data = input.selection_text if input.selection_text else input.text
 
         if args[0].icon == "content-copy":
@@ -713,7 +774,8 @@ class ClipButtons(MyBoxLayout):
 
 
 class MLabel(Label):
-    color = ListProperty(color(f"images/{theme_image[config_data['theme']][0]}.png"))
+    color = ListProperty(
+        color(f"images/{theme_image[config_data['theme']][0]}.png"))
     halign = StringProperty("center")
     valign = StringProperty("center")
     line_height = NumericProperty(1.5)
@@ -732,7 +794,8 @@ class Date(MDDatePicker):
         if args:
             date = args[0].strftime(config_data["format"])
             self.button.text = date
-        self.button.parent.parent.parent.parent.parent.parent.parent.parent.options_close()
+        self.button.parent.parent.parent.parent.parent.parent.parent.parent.options_close(
+        )
 
     def __init__(self, **kwargs):
         super(Date, self).__init__(**kwargs, callback=self.on_dismiss)
@@ -745,17 +808,14 @@ class SwipeHover(RelativeLayout):
 
     def __init__(self, **kwargs):
         super(SwipeHover, self).__init__(**kwargs)
-        self.image_container = MDCard(
-            radius=[
-                self.radius,
-            ]
-        )
+        self.image_container = MDCard(radius=[
+            self.radius,
+        ])
         self.image = GridLayout(cols=2, rows=2)
 
         for index, text in enumerate(["pressed", "hover", "text", "normal"]):
-            new = FitImage(
-                source=f"images/{text}{self.source}.png", radius=[0, 0, 0, 0]
-            )
+            new = FitImage(source=f"images/{text}{self.source}.png",
+                           radius=[0, 0, 0, 0])
             new.radius[index] = self.radius
             self.image.add_widget(new)
         self.image.children[0], self.image.children[1] = (
@@ -767,31 +827,40 @@ class SwipeHover(RelativeLayout):
             source=f"images/{theme_image[config_data['theme']][1]}.png",
             radius=[0],
             size_hint=(0, 0),
-            pos_hint={"center_x": 0.5, "center_y": -0.5},
+            pos_hint={
+                "center_x": 0.5,
+                "center_y": -0.5
+            },
         )
         self.image2 = FitImage(
             source=f"images/{theme_image[config_data['theme']][3]}.png",
             radius=[0],
             size_hint=(0, 0),
-            pos_hint={"center_x": 0.5, "center_y": -0.5},
+            pos_hint={
+                "center_x": 0.5,
+                "center_y": -0.5
+            },
         )
         self.text = MLabel(
             text=self.title,
             font_size=0,
             padding=[0, dp(40)],
-            color=color(f"images/{theme_image[config_data['theme']][2]}.png")[:3] + [0],
+            color=color(f"images/{theme_image[config_data['theme']][2]}.png")
+            [:3] + [0],
         )
 
         self.select = MDCheckbox(
             size_hint=(0, 0),
-            pos_hint={"center_x": 0.5, "center_y": -0.5},
+            pos_hint={
+                "center_x": 0.5,
+                "center_y": -0.5
+            },
             group="group",
         )
         self.select.update_color()
         self.select.update_primary_color(self, self.text.color[:3] + [1])
-        self.select.bind(
-            on_press=lambda a: self.parent.parent.parent.parent.parent.parent.theme(a)
-        )
+        self.select.bind(on_press=lambda a: self.parent.parent.parent.parent.
+                         parent.parent.theme(a))
         self.add_widget(self.image_container)
         self.add_widget(self.text)
         self.add_widget(self.select)
@@ -807,14 +876,18 @@ class Swiper(MDSwiperItem, HoverBehavior):
     def on_leave(self, *args):
         Animation(
             radius=[500],
-            pos_hint={"center_y": -0.5},
+            pos_hint={
+                "center_y": -0.5
+            },
             size_hint=(0, 0),
             duration=0.6,
             t="in_out_cubic",
         ).start(self.layout.image1)
         Animation(
             radius=[500],
-            pos_hint={"center_y": -0.5},
+            pos_hint={
+                "center_y": -0.5
+            },
             size_hint=(0, 0),
             duration=0.8,
             t="in_out_cubic",
@@ -827,7 +900,9 @@ class Swiper(MDSwiperItem, HoverBehavior):
             t="in_out_sine",
         ).start(self.layout.text)
         Animation(
-            pos_hint={"center_y": -0.5},
+            pos_hint={
+                "center_y": -0.5
+            },
             size_hint=(0, 0),
             duration=0.8,
             t="in_out_cubic",
@@ -839,14 +914,18 @@ class Swiper(MDSwiperItem, HoverBehavior):
             return
         Animation(
             radius=[self.radius],
-            pos_hint={"center_y": 0.5},
+            pos_hint={
+                "center_y": 0.5
+            },
             size_hint=(1, 1),
             duration=0.8,
             t="in_out_cubic",
         ).start(self.layout.image1)
         Animation(
             radius=[self.radius],
-            pos_hint={"center_y": 0.5},
+            pos_hint={
+                "center_y": 0.5
+            },
             size_hint=(1, 1),
             duration=0.6,
             t="in_out_cubic",
@@ -859,7 +938,9 @@ class Swiper(MDSwiperItem, HoverBehavior):
             t="in_out_sine",
         ).start(self.layout.text)
         Animation(
-            pos_hint={"center_y": 0.3},
+            pos_hint={
+                "center_y": 0.3
+            },
             size_hint=(0.2, 0.3),
             duration=0.8,
             t="in_out_cubic",
@@ -867,9 +948,9 @@ class Swiper(MDSwiperItem, HoverBehavior):
 
     def __init__(self, **kwargs):
         super(Swiper, self).__init__(**kwargs)
-        self.layout = SwipeHover(
-            source=self.source, radius=self.radius, title=self.title
-        )
+        self.layout = SwipeHover(source=self.source,
+                                 radius=self.radius,
+                                 title=self.title)
         self.layout.add_widget(self.layout.image1, index=2)
         self.layout.add_widget(self.layout.image2, index=3)
         self.add_widget(self.layout)

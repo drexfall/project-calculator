@@ -18,7 +18,6 @@ from properties import (color, config_data, formats, hover, platform, symbol,
 from settings import Settings
 from widgets import ClipButtons, Date, Drop, Icon, MyBoxLayout
 
-
 class Pages(ScreenManager):
     pages_list = {}
 
@@ -123,6 +122,7 @@ class Pages(ScreenManager):
             self.page_screen.add_widget(self.page)
             self.add_widget(self.page_screen)
             self.pages_list.update({page_list["mode"]: self.page})
+        
         if platform != "android":
             Clock.schedule_once(
                 self.pages_list[config_data["page_list"][0]["mode"]].focus_entry, 2
@@ -187,11 +187,13 @@ class MainScreen(EffectWidget):
 
         Clock.schedule_interval(self.text_halign, 0.1)
 
-
+        Window.set_icon('icon.png')
+        Window.set_title('Calculator')
 if __name__ == "__main__":
 
     class Main(MDApp):
         def build(self):
+            
             return MainScreen()
 
     Main().run()

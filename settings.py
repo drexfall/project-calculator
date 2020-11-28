@@ -16,6 +16,7 @@ from kivy.properties import (
     ObjectProperty,
     StringProperty,
 )
+from kivy.uix.scrollview import ScrollView
 from kivy.uix.accordion import Accordion, AccordionItem
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -215,7 +216,6 @@ class Themes(MyBoxLayout):
     theme_check = ListProperty()
     active_theme = ObjectProperty()
     items = ListProperty()
-
     def on_theme_swipe(self, *args):
 
         for item in self.items:
@@ -278,7 +278,7 @@ class Themes(MyBoxLayout):
         )
         self.add_widget(self.theme_active)
 
-        self.restart_text = MLabel(size_hint_y=0.1)
+        self.restart_text = MLabel(size_hint_y=0.4)
         self.add_widget(self.restart_text)
         Window.bind(
             on_key_up=lambda *args: self.image_item.swipe_left()
@@ -288,6 +288,8 @@ class Themes(MyBoxLayout):
 
 
 class About(MyBoxLayout):
+    font_size = NumericProperty(14)
+    
     def __init__(self, **kwargs):
         super(About, self).__init__(**kwargs)
         self.padding = [75, 30]
@@ -295,27 +297,30 @@ class About(MyBoxLayout):
             text="Calculator",
             valign="top",
             bold=True,
-            font_size=dp(25),
+            font_size=dp(self.font_size*1.5),
             size_hint_y=0.6,
         )
         first_line = "This project was made keeping the power of [ref=https://www.python.org/][b]Python[/b][/ref] and flexibillity of open source software in mind. "
         second_line = "We have strived to bring you the richness of [ref=https://material.io/design][b]Google's Material Design[/b][/ref] via [ref=https://kivy.org/#home][b]Kivy[/b][/ref] and [ref=https://kivymd.readthedocs.io/en/latest/][b]KivyMD[/b][/ref] "
         third_line = "alongwith the good old [ref=https://python-pillow.org/][b]Pillow[/b][/ref] and [ref=https://docs.python.org/3/library/math.html][b]Math[/b][/ref] libraries. "
-        fourth_line = "\n\nHope you have a great time with this application! "
+        fourth_line = "\n\nHope you have a great time with this completely free and open source application! "
         self.body1 = MLabel(
             text= first_line+second_line+third_line+fourth_line,
             markup = True,
-            font_size=dp(15),
+            font_size=dp(self.font_size*1),
             halign = 'justify',
-            valign="top",
+            valign="top"
         )
 
         self.footer = MyBoxLayout()
-
+        credit_text1 = "[ref=https://www.pexels.com/photo/black-click-pen-on-white-paper-167682/][b]splash image[/b][/ref] by [ref=https://www.pexels.com/@lum3n-44775][b]Lum3n[/b][/ref] from [ref=https://www.pexels.com/@lum3n-44775/][b]Pexels[/b][/ref]"
+        credit_text2 = "[ref=https://www.iconarchive.com/show/button-ui-system-apps-icons-by-blackvariant/Calculator-icon.html][b]icon[/b][/ref] by [ref=https://www.iconarchive.com/artist/blackvariant.html][b]BlackVariant[/b][/ref] from [ref=https://www.iconarchive.com/][b]IconArchive[/b][/ref]"
+        credit_text3 = "conversion rates by [ref=https://www.fxexchangerate.com/][b]FxexchangeRate[/b][/ref]"
         self.footer.splash_credit = MLabel(
-            text="[ref=https://www.pexels.com/photo/black-click-pen-on-white-paper-167682/][b]splash image[/b][/ref] by [ref=https://www.pexels.com/@lum3n-44775][b]Lum3n[/b][/ref] from [ref=https://www.pexels.com/@lum3n-44775/][b]Pexels[/b][/ref]",
+            
+            text=credit_text1+'\n'+credit_text2+'\n'+credit_text3,
             markup=True,
-            font_size=dp(12),
+            font_size=dp(self.font_size*0.8),
             valign="bottom",
             halign="left",
             size_hint=(0.4, 1),
@@ -323,16 +328,16 @@ class About(MyBoxLayout):
 
         self.footer.source_code = MLabel(
             text="[ref=https://www.github.com/shreyash/project-calculator][b]source code here[/b][/ref]",
-            font_size=dp(12),
+            font_size=dp(self.font_size*0.9),
             valign="bottom",
             halign="center",
             markup=True,
-            size_hint=(0.2, 1),
+            size_hint=(0.2, 1)
         )
         self.footer.credits = MLabel(
             text="Aman Singh (XII-E)\nShreyash Singh (XII-D)\nSuyash Kumar (XII-D)\nVineet Pratap Singh (XII-D)\n[ref=http://dpseldeco.com/][b]Delhi Public School Eldeco[/b][/ref]",
             markup = True,
-            font_size=dp(13),
+            font_size=dp(self.font_size*0.9),
             halign="right",
             valign="bottom",
             size_hint=(0.4, 1),
@@ -354,13 +359,11 @@ class About(MyBoxLayout):
         self.footer.credits.bind(
             on_ref_press=lambda args, args1: webbrowser.get().open_new_tab(args1)
         )
-        for widget_key in [
-            text
-            for text in self.__dict__
-            if not text.startswith("_") and not text == "canvas"
-        ]:
-            widget = self.__dict__[widget_key]
-            self.add_widget(widget)
+        
+        self.add_widget(self.header)
+        self.add_widget(self.body1)
+        self.add_widget(self.footer)
+        
 
 
 class Settings(MyBoxLayout):
