@@ -6,12 +6,12 @@ from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix.screenmanager import RiseInTransition, Screen, ScreenManager
+from kivy.uix.screenmanager import RiseInTransition, ScreenManager
+from kivymd.uix.screen import MDScreen
 from kivy.utils import platform
 from kivymd.app import MDApp
 from kivymd.uix.progressbar import MDProgressBar
 from kivymd.utils.fitimage import FitImage
-
 
 class Main(MDApp):
     def resize(self, *args):
@@ -23,7 +23,7 @@ class Main(MDApp):
     def load(self, *args):
         from main_app import MainScreen
 
-        self.main = Screen(name="main")
+        self.main = MDScreen(name="main")
         self.main.add_widget(MainScreen())
         self.final.add_widget(self.main)
         Window.bind(on_resize=self.resize)
@@ -47,36 +47,29 @@ class Main(MDApp):
 
     def build(self):
         Window.borderless = 1
-        self.layout = RelativeLayout()
         self.final = ScreenManager()
-        self.splash = Screen(name="splash")
+        self.splash = MDScreen(name="splash")
         self.splash_image = FitImage(
-            source="splash1.png",
-            size=(dp(1280), dp(720)),
-            radius=[
-                10,
-            ],
-            mipmap=True,
+            source="splash.png",
         )
-        self.layout.add_widget(self.splash_image)
+        self.splash.add_widget(self.splash_image)
         self.bar = MDProgressBar(
             color=[0, 0, 0, 1],
             type="determinate",
-            running_duration=1,
-            catching_duration=1.5,
+            running_duration=2,
+            catching_duration=2.5,
         )
         self.bar_box = BoxLayout(padding=dp(66), pos=(0, dp(-240)))
         self.bar.start()
         self.bar_box.add_widget(self.bar)
-        self.layout.add_widget(self.bar_box)
-        self.splash.add_widget(self.layout)
+        self.splash.add_widget(self.bar_box)
         self.final.add_widget(self.splash)
         self.final.transition = RiseInTransition(duration=1)
         self.final.current = "splash"
 
         with open("config.json", "r") as file:
             self.config = json.load(file)
-        Clock.schedule_once(self.main_load, 5)
+        Clock.schedule_once(self.main_load, 3.5)
         if platform == "android" or self.config["splash"] == 0:
             from main_app import MainScreen
 
