@@ -1,5 +1,6 @@
 import string
 import re
+import webbrowser
 from kivy.animation import Animation, Parallel
 from kivy.clock import Clock
 from kivy.core.text.markup import MarkupLabel
@@ -482,7 +483,7 @@ class Text(TextInput):
             return
 
         if ((current_page[0] == "standard"
-             and substring not in string.digits + "%()+-x÷^.!=\r\npass"
+             and substring not in string.digits + "%()+-x÷^.!=\r\n"+ string.ascii_letters
              and substring != "^2") or
             (current_page[0] == "scientific"
              and substring not in string.digits + "%()e+-x÷^.!sincotae=\r\n"
@@ -517,6 +518,24 @@ class Text(TextInput):
                     break
             else:
                 if current_page[0] not in ["convert", "days"]:
+                    link = False
+                    if re.findall("[0-9]",self.text):
+                        return
+                    if self.text.count('.') == 0 and self.text.isalpha:
+                        self.text = "www."+self.text+".com"
+                        link = True
+                    elif self.text.count('.') == 1:
+                        if 'www' in self.text:
+                            self.text+=".com"
+                        else:
+                            self.text = "www."+self.text
+                        self.text = "www."+self.text+".com"
+                        link = True
+                    
+                    if self.text.count('.') == 2 or link: 
+                        webbrowser.get().open_new_tab(self.text)   
+                        self.page.preview.text = "Opened in web browser!"
+                        self.text = ''
                     return
             self.page.old_text = self.text
             self.page.preview.text = "[ref=self.old_text]" + self.text + "[/ref]"
@@ -558,6 +577,12 @@ class Text(TextInput):
                     self.page.preview.text = "Something went wrong!"
                     return
             elif current_page[0] == "convert":
+                if not self.quantity:
+                    self.quantity = self.page.layout.buttons[0][1].text
+                if not self.from_unit:
+                    self.from_unit = self.page.layout.buttons[1][1].text
+                if not self.to_unit:
+                    self.to_unit = self.page.layout.buttons[1][3].text
                 try:
                     substring = (str(
                         eval("Convert." + self.quantity)
@@ -639,6 +664,7 @@ class Text(TextInput):
 
     def __init__(self, **kwargs):
         super(Text, self).__init__(**kwargs)
+        
         self.background_disabled_normal = self.background_active
         self.background_normal = self.background_active
 
