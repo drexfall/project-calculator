@@ -414,7 +414,7 @@ class Text(TextInput):
 
     def insert_text(self, substring, from_undo=False):
         self.page = self.parent.parent.parent
-
+        
         if substring == "AC":
             self.text = ""
             return
@@ -484,6 +484,7 @@ class Text(TextInput):
 
         if ((current_page[0] == "standard"
              and substring not in string.digits + "%()+-x÷^.!=\r\n"+ string.ascii_letters
+             and not substring.isdecimal()
              and substring != "^2") or
             (current_page[0] == "scientific"
              and substring not in string.digits + "%()e+-x÷^.!sincotae=\r\n"
@@ -498,7 +499,9 @@ class Text(TextInput):
                     and substring not in string.digits + ".=\r\n")
                 or (current_page[0] == "days"
                     and substring not in string.digits + "=\r\n")):
+            
             return
+
         self.last_press = substring
         if substring in ["\r", "\n", "="]:
             if self.text == 'pass':
@@ -517,7 +520,7 @@ class Text(TextInput):
                 if self.text.count(opr):
                     break
             else:
-                if current_page[0] not in ["convert", "days"]:
+                if current_page[0] not in ["scientific","convert", "days"]:
                     link = False
                     if re.findall("[0-9]",self.text):
                         return
@@ -529,12 +532,12 @@ class Text(TextInput):
                             self.text+=".com"
                         else:
                             self.text = "www."+self.text
-                        self.text = "www."+self.text+".com"
                         link = True
                     
                     if self.text.count('.') == 2 or link: 
                         webbrowser.get().open_new_tab(self.text)   
                         self.page.preview.text = "Opened in web browser!"
+                        Clock.schedule_once(lambda dt: setattr(self.page.preview,'text',''),1)
                         self.text = ''
                     return
             self.page.old_text = self.text

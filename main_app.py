@@ -119,6 +119,8 @@ class Pages(ScreenManager):
             elif page_list["mode"] == "scientific":
                 self.page.layout.size_change(-1, 0, 2)
                 self.page.layout.inverse_change(self.page.layout.buttons[0][1])
+                self.page.layout.buttons[0][2].text = 'RAD' if config_data['radian'] else 'DEG'
+
             self.page_screen.add_widget(self.page)
             self.add_widget(self.page_screen)
             self.pages_list.update({page_list["mode"]: self.page})

@@ -126,8 +126,8 @@ class ButtonStack(MyBoxLayout):
                         button.state = "down"
                         button.color = button.hover_color
                     if button.text == 'RAD':
-                            button.text = 'RAD' if config_data['radian'] else 'DEG'
-                            button.bind(on_release = lambda button: setattr(button,'text','RAD' if button.text == 'DEG' else 'DEG'))
+                        
+                        button.bind(on_release = lambda button: setattr(button,'text','RAD' if button.text == 'DEG' else 'DEG'))
                     if button.text == 'INV':
                             button.bind(on_release = self.inverse_change)
                 else:
@@ -137,7 +137,7 @@ class ButtonStack(MyBoxLayout):
                                 button.text
                             )
                         )
-
+        
         self.options = ModalView(size_hint=(0.4, 0.6))
         self.options_layout = MyBoxLayout(orientation="vertical")
         for options_button_text in config_data["page_list"]:

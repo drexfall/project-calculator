@@ -5,7 +5,6 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import RiseInTransition, ScreenManager
 from kivymd.uix.screen import MDScreen
 from kivy.utils import platform
@@ -17,8 +16,8 @@ class Main(MDApp):
     def resize(self, *args):
         if args[1] < dp(400):
             args[0].size = dp(400), args[2]
-        if args[2] < dp(700):
-            args[0].size = args[1], dp(700)
+        if args[2] < dp(600):
+            args[0].size = args[1], dp(600)
 
     def load(self, *args):
         from main_app import MainScreen
@@ -36,7 +35,7 @@ class Main(MDApp):
 
         def change(dt):
             Animation(
-                size=(dp(500), Window.size[1]),
+                size=(dp(400), dp(600)),
                 left=temp[0],
                 duration=0.4,
                 t="in_out_cubic",
@@ -76,7 +75,7 @@ class Main(MDApp):
             return MainScreen()
         else:
 
-            Clock.schedule_once(self.load, 2)
+            Clock.schedule_once(self.load, 3)
             return self.final
 
 
