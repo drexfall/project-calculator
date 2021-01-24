@@ -1,20 +1,20 @@
 import json
 from datetime import datetime
+import os
+import sys
 
 from kivy.clock import Clock
 from kivy.core.window import Window
-from kivy.metrics import dp
+from kivy.resources import resource_add_path
 from kivy.uix.effectwidget import (EffectWidget, HorizontalBlurEffect,
                                    VerticalBlurEffect)
 from kivy.uix.modalview import ModalView
 from kivy.uix.screenmanager import Screen, ScreenManager, SwapTransition
 from kivymd.app import MDApp
-from kivymd.uix.button import MDIconButton
 
 from history import History
 from page import Page
-from properties import (color, config_data, formats, hover, platform, symbol,
-                        theme_image)
+from properties import (config_data, formats, hover, platform)
 from settings import Settings
 from widgets import ClipButtons, Date, Drop, Icon, MyBoxLayout
 
@@ -126,9 +126,7 @@ class Pages(ScreenManager):
             self.pages_list.update({page_list["mode"]: self.page})
         
         if platform != "android":
-            Clock.schedule_once(
-                self.pages_list[config_data["page_list"][0]["mode"]].focus_entry, 2
-            )
+            Clock.schedule_once(self.pages_list[config_data["page_list"][0]["mode"]].focus_entry,1)
 
 
 class MainScreen(EffectWidget):
@@ -191,11 +189,13 @@ class MainScreen(EffectWidget):
 
         Window.set_icon('icon.png')
         Window.set_title('Calculator')
+        
 if __name__ == "__main__":
 
     class Main(MDApp):
         def build(self):
             
             return MainScreen()
-
+    if hasattr(sys, '_MEIPASS'):
+        resource_add_path(os.path.join(sys._MEIPASS))
     Main().run()

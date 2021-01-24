@@ -1,4 +1,5 @@
 import json
+from os import mkdir
 import platform
 from datetime import datetime
 from urllib import error
@@ -8,6 +9,12 @@ from xml.etree.ElementTree import parse
 from kivy.utils import platform as operating_system
 from kivy.utils import rgba
 from PIL import Image
+
+try:
+    open("history.json", 'r')
+except FileNotFoundError:
+    with open("history.json", "w+") as file:
+        file.write("{}")
 
 
 def days_number(fdate, tdate):
@@ -65,11 +72,13 @@ def currency_unit_list():
     try:
         url = parse(urlopen("https://inr.fxexchangerate.com/rss.xml"))
         for item in url.iterfind("channel/item"):
-            convert_unit_currency.append(str(item.findtext("title").split("/")[1]))
+            convert_unit_currency.append(
+                str(item.findtext("title").split("/")[1]))
     except error.URLError as e:
         if "-2" in str(e.reason):
             convert_unit_currency.append("No Internet")
     convert_unit_currency.sort()
+
 
 convert_quantities = (
     "area",
@@ -104,19 +113,13 @@ convert_unit_weight = (
     "ng",
 )
 
+theme_image = {}
 
-theme_image = {
-    "theme1": ("text1", "hover1", "normal1", "pressed1", "Light"),
-    "theme2": ("text2", "hover2", "normal2", "pressed2", "Light"),
-    "theme3": ("text3", "hover3", "normal3", "pressed3", "Light"),
-    "theme4": ("text4", "hover4", "normal4", "pressed4", "Light"),
-    "theme5": ("text5", "hover5", "normal5", "pressed5", "Light"),
-}
-formats = ("%d-%m-%y", 
-           "%d-%m-%Y", 
-           "%m-%d-%y", 
-           "%m-%d-%Y", 
-           "%m/%d/%Y", 
+formats = ("%d-%m-%y",
+           "%d-%m-%Y",
+           "%m-%d-%y",
+           "%m-%d-%Y",
+           "%m/%d/%Y",
            "%m/%d/%y",
            "%d/%m/%Y",
            "%d/%m/%y",
@@ -126,6 +129,18 @@ formats = ("%d-%m-%y",
 convert_unit_currency = []
 config_data = None
 config_create()
+
+for index_x,x in enumerate(config_data["theme_colors"]):
+    theme_image.update({x[0]: ([x[1], x[2], x[3], x[4]])})
+
+    for index, y in enumerate(['text', 'hover', 'normal', 'pressed']):
+        try:
+            mkdir('images')
+        except FileExistsError:
+            pass
+        Image.new('RGB', (50, 50), color=tuple(x[index+1])).save(f"images\\{y}{index_x+1}.png")
+        theme_image[x[0]][index] = f"{y}{index_x+1}"
+
 currency_unit_list()
 current_page = [config_data["page_list"][0]["mode"]]
 hover = [True]

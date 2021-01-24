@@ -64,17 +64,24 @@ class SwitchText(BoxLayout):
     def touch(self, button):
         final = int(self.setting_button.active)
         self.parent.parent.parent.parent.selected.update(
-            {list(self.parent.parent.parent.parent.selected.keys())[self.index]: final}
+            {list(self.parent.parent.parent.parent.selected.keys())
+             [self.index]: final}
         )
 
     def __init__(self, **kwargs):
         super(SwitchText, self).__init__(**kwargs)
         self.button_box = BoxLayout()
-        self.setting_button = self.option(size_hint=(None, None), size=(45, 45))
+        self.setting_button = self.option(size_hint=(None, None),
+                                          size=(45, 45),
+                                          selected_color=color(
+                                              f"images/{theme_image[config_data['theme']][2]}.png"),
+                                        unselected_color = color(f"images/{theme_image[config_data['theme']][0]}.png")
+                                          )
         self.setting_button.update_color()
         self.setting_button.update_primary_color(
-            self, color(f"images/{theme_image[config_data['theme']][0]}.png")
+            self, color(f"images/{theme_image[config_data['theme']][1]}.png")
         )
+
         if self.down:
             self.setting_button.state = "down"
         self.setting_button.bind(on_release=self.touch)
@@ -88,14 +95,11 @@ class SaveButtons(MyBoxLayout):
             if type(x.box).__name__ == "General":
                 config_data.update(x.box.selected)
             elif type(x.box).__name__ == "Themes":
-                new = (
-                    x.box.image_item.get_items().index(x.box.active_theme.parent.parent)
-                    + 1
-                )
-                if f"theme{new}" != config_data["theme"]:
-                    config_data.update({"theme": f"theme{new}"})
+                new = list(theme_image.keys())[x.box.image_item.get_items().index(x.box.active_theme.parent.parent)]
+                if new != config_data["theme"]:
+                    config_data.update({"theme": new})
                     x.box.theme_active.text = (
-                        f"{x.box.active_theme.parent.parent.title} is applied!"
+                        f"{new} is applied!"
                     )
                     x.box.restart_text.text = "Click on restart to see the changes!"
                     self.save_button.text = "Restart"
@@ -179,8 +183,7 @@ class General(MyBoxLayout):
                         index=index,
                         down=True
                         if self.selected[list(self.selected.keys())[index]] == 1
-                        else False,
-                    )
+                        else False)
                 )
             else:
                 container.add_widget(
@@ -188,7 +191,7 @@ class General(MyBoxLayout):
                         text=str(self.selected[option_tuple[3]]),
                         title=option_tuple[3],
                         halign="center",
-                        multiline=False,
+                        multiline=False
                     )
                 )
                 input = container.children[0]
@@ -216,6 +219,7 @@ class Themes(MyBoxLayout):
     theme_check = ListProperty()
     active_theme = ObjectProperty()
     items = ListProperty()
+
     def on_theme_swipe(self, *args):
 
         for item in self.items:
@@ -232,6 +236,7 @@ class Themes(MyBoxLayout):
 
     def theme(self, *args):
         c = 0
+        
         for x in self.theme_check:
             if x.state == "down":
                 c += 1
@@ -250,17 +255,9 @@ class Themes(MyBoxLayout):
             swipe_distance=dp(40), size_hint_y=None, height=dp(200), width_mult=6
         )
         self.image_item.bind(on_swipe=lambda a: self.on_theme_swipe(a))
-        for x, name in enumerate(
-            [
-                "Lovely Lavender",
-                "Perfect Peach",
-                "Magestic Magenta",
-                "Totally Teal",
-                "Coffee Cool",
-            ]
-        ):
+        for x, name in enumerate([j for j in theme_image]):
             self.item = Swiper(source=str(x + 1), title=name)
-            if str(x + 1) == config_data["theme"][-1]:
+            if name == config_data["theme"]:
                 self.item.layout.select.active = self.item.hover = True
 
             self.theme_check.append(self.item.layout.select)
@@ -271,7 +268,7 @@ class Themes(MyBoxLayout):
 
         self.add_widget(MyBoxLayout(size_hint_x=0.1))
         self.add_widget(self.selector)
-        self.image_item.set_current(int(config_data["theme"][-1]) - 1)
+        self.image_item.set_current(list(theme_image.keys()).index(config_data["theme"]))
 
         self.theme_active = MLabel(
             text=f"{self.active_theme.parent.parent.title} is applied!"
@@ -289,7 +286,7 @@ class Themes(MyBoxLayout):
 
 class About(MyBoxLayout):
     font_size = NumericProperty(14)
-    
+
     def __init__(self, **kwargs):
         super(About, self).__init__(**kwargs)
         self.padding = [75, 30]
@@ -305,19 +302,19 @@ class About(MyBoxLayout):
         third_line = "alongwith the good old [ref=https://python-pillow.org/][b]Pillow[/b][/ref] and [ref=https://docs.python.org/3/library/math.html][b]Math[/b][/ref] libraries. "
         fourth_line = "\n\nHope you have a great time with this completely free and open source application! "
         self.body1 = MLabel(
-            text= first_line+second_line+third_line+fourth_line,
-            markup = True,
+            text=first_line+second_line+third_line+fourth_line,
+            markup=True,
             font_size=dp(self.font_size*1),
-            halign = 'justify',
+            halign='justify',
             valign="top"
         )
 
         self.footer = MyBoxLayout()
-        credit_text1 = "[ref=https://www.pexels.com/photo/black-click-pen-on-white-paper-167682/][b]splash image[/b][/ref] by [ref=https://www.pexels.com/@lum3n-44775][b]Lum3n[/b][/ref] from [ref=https://www.pexels.com/@lum3n-44775/][b]Pexels[/b][/ref]"
+        credit_text1 = "[ref=https://www.pexels.com/photo/black-and-grey-casio-scientific-calculator-showing-formula-220301/][b]splash image[/b][/ref] by [ref=https://www.pexels.com/@pixabay][b]Pixabay[/b][/ref] from [ref=https://www.pexels.com/][b]Pexels[/b][/ref]"
         credit_text2 = "[ref=https://www.iconarchive.com/show/button-ui-system-apps-icons-by-blackvariant/Calculator-icon.html][b]icon[/b][/ref] by [ref=https://www.iconarchive.com/artist/blackvariant.html][b]BlackVariant[/b][/ref] from [ref=https://www.iconarchive.com/][b]IconArchive[/b][/ref]"
         credit_text3 = "conversion rates by [ref=https://www.fxexchangerate.com/][b]FxexchangeRate[/b][/ref]"
         self.footer.splash_credit = MLabel(
-            
+
             text=credit_text1+'\n'+credit_text2+'\n'+credit_text3,
             markup=True,
             font_size=dp(self.font_size*0.8),
@@ -336,13 +333,13 @@ class About(MyBoxLayout):
         )
         self.footer.credits = MLabel(
             text="Aman Singh (XII-E)\nShreyash Singh (XII-D)\nSuyash Kumar (XII-D)\nVineet Pratap Singh (XII-D)\n[ref=http://dpseldeco.com/][b]Delhi Public School Eldeco[/b][/ref]",
-            markup = True,
+            markup=True,
             font_size=dp(self.font_size*0.9),
             halign="right",
             valign="bottom",
             size_hint=(0.4, 1),
         )
-        
+
         self.footer.add_widget(self.footer.splash_credit)
         self.footer.add_widget(self.footer.source_code)
         self.footer.add_widget(self.footer.credits)
@@ -359,11 +356,10 @@ class About(MyBoxLayout):
         self.footer.credits.bind(
             on_ref_press=lambda args, args1: webbrowser.get().open_new_tab(args1)
         )
-        
+
         self.add_widget(self.header)
         self.add_widget(self.body1)
         self.add_widget(self.footer)
-        
 
 
 class Settings(MyBoxLayout):

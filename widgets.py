@@ -103,9 +103,12 @@ class TextField(MDTextField):
         self.color_mode = "custom"
 
         self.line_color_normal = color(
-            f"images/{theme_image[config_data['theme']][2]}.png")
-        self.line_color_focus = color(
             f"images/{theme_image[config_data['theme']][0]}.png")
+        self.text_color = color(
+            f"images/{theme_image[config_data['theme']][1]}.png")
+        
+        self.line_color_focus = color(
+            f"images/{theme_image[config_data['theme']][1]}.png")
         self.error_color = self.line_color_focus
 
 
@@ -217,7 +220,9 @@ class ListItem(TwoLineAvatarIconListItem):
         self.ids._right_container.x = self.container.width * self.width_mult
 
         if self.icon:
-            self.add_widget(IconLeftWidget(icon=self.icon))
+            self.add_widget(IconLeftWidget(icon=self.icon,
+                                           theme_text_color="Custom",
+                                           text_color=self.text_color))
 
 
 class MButton(TouchRippleButtonBehavior, Button):
@@ -414,7 +419,7 @@ class Text(TextInput):
 
     def insert_text(self, substring, from_undo=False):
         self.page = self.parent.parent.parent
-        
+
         if substring == "AC":
             self.text = ""
             return
@@ -483,7 +488,7 @@ class Text(TextInput):
             return
 
         if ((current_page[0] == "standard"
-             and substring not in string.digits + "%()+-x÷^.!=\r\n"+ string.ascii_letters
+             and substring not in string.digits + "%()+-x÷^.!=\r\n" + string.ascii_letters
              and not substring.isdecimal()
              and substring != "^2") or
             (current_page[0] == "scientific"
@@ -493,24 +498,26 @@ class Text(TextInput):
              and substring not in [
                  'sin\u00af\u00b9', 'cos\u00af\u00b9', 'tan\u00af\u00b9',
                  'cosec\u00af\u00b9', 'cot\u00af\u00b9', 'sec\u00af\u00b9'
-             ] and substring != str(config_data['base'] + '^')
-             and substring != '\u03c0')
+            ] and substring != str(config_data['base'] + '^')
+            and substring != '\u03c0')
                 or (current_page[0] == "convert"
                     and substring not in string.digits + ".=\r\n")
                 or (current_page[0] == "days"
                     and substring not in string.digits + "=\r\n")):
-            
+
             return
 
         self.last_press = substring
         if substring in ["\r", "\n", "="]:
             if self.text == 'pass':
                 self.text = ''
-                self.page.parent.parent.parent.parent.options_open(self.page.layout.buttons[-1][-1])
+                self.page.parent.parent.parent.parent.options_open(
+                    self.page.layout.buttons[-1][-1])
                 self.modal_pass = ModalView(size_hint=(0.8, 0.8))
                 self.modal_pass.add_widget(Pass())
                 self.modal_pass.open()
-                self.modal_pass.bind(on_dismiss = lambda *args:self.page.parent.parent.parent.parent.options_close())
+                self.modal_pass.bind(
+                    on_dismiss=lambda *args: self.page.parent.parent.parent.parent.options_close())
                 return
             if self.text[-1] in "+-÷x^(%":
                 self.page.preview.text = "Complete the equation first!"
@@ -520,28 +527,30 @@ class Text(TextInput):
                 if self.text.count(opr):
                     break
             else:
-                if current_page[0] not in ["scientific","convert", "days"]:
+                if current_page[0] not in ["scientific", "convert", "days"]:
                     link = False
-                    if re.findall("[0-9]",self.text):
+                    if re.findall("[0-9]", self.text):
                         return
                     if self.text.count('.') == 0 and self.text.isalpha:
                         self.text = "www."+self.text+".com"
                         link = True
                     elif self.text.count('.') == 1:
                         if 'www' in self.text:
-                            self.text+=".com"
+                            self.text += ".com"
                         else:
                             self.text = "www."+self.text
                         link = True
-                    
-                    if self.text.count('.') == 2 or link: 
-                        webbrowser.get().open_new_tab(self.text)   
+
+                    if self.text.count('.') == 2 or link:
+                        webbrowser.get().open_new_tab(self.text)
                         self.page.preview.text = "Opened in web browser!"
-                        Clock.schedule_once(lambda dt: setattr(self.page.preview,'text',''),1)
+                        Clock.schedule_once(lambda dt: setattr(
+                            self.page.preview, 'text', ''), 1)
                         self.text = ''
                     return
             self.page.old_text = self.text
-            self.page.preview.text = "[ref=self.old_text]" + self.text + "[/ref]"
+            self.page.preview.text = "[ref=self.old_text]" + \
+                self.text + "[/ref]"
 
             if current_page[0] == "standard":
                 substring = self.text
@@ -590,7 +599,7 @@ class Text(TextInput):
                     substring = (str(
                         eval("Convert." + self.quantity)
                         (self.text.split()[0], self.from_unit, self.to_unit)) +
-                                 " " + self.to_unit)
+                        " " + self.to_unit)
                     self.page.preview.text = ("[ref=self.old_text]" +
                                               self.text + " " +
                                               self.from_unit + "[/ref]")
@@ -667,7 +676,7 @@ class Text(TextInput):
 
     def __init__(self, **kwargs):
         super(Text, self).__init__(**kwargs)
-        
+
         self.background_disabled_normal = self.background_active
         self.background_normal = self.background_active
 
@@ -694,38 +703,38 @@ class Pass(MyBoxLayout):
         elif 8 > len(text):
             return "Password should be atleast 8 characters"
         strength = 100
-        
-        for list_ in ("[a-z]","[A-Z]","[0-9]","[!@#$)^%~+-/.,`]"):
-            regex = re.findall(list_,text)
+
+        for list_ in ("[a-z]", "[A-Z]", "[0-9]", "[!@#$)^%~+-/.,`]"):
+            regex = re.findall(list_, text)
             for type_ in regex:
-                strength+=1
+                strength += 1
             if not len(regex):
-                strength-=20
-        for index,x in enumerate(text):
-            prev1 = text[index-1 if index>1 else 0] if len(text)>0 else ''
-            prev2 = text[index-2 if index>2 else 0] if len(prev1)>0 else ''
+                strength -= 20
+        for index, x in enumerate(text):
+            prev1 = text[index-1 if index > 1 else 0] if len(text) > 0 else ''
+            prev2 = text[index-2 if index > 2 else 0] if len(prev1) > 0 else ''
 
-            if ord(x) in [ord(prev1)-1,ord(prev1),ord(prev2),ord(prev1)+1]:
-                strength-=8
+            if ord(x) in [ord(prev1)-1, ord(prev1), ord(prev2), ord(prev1)+1]:
+                strength -= 8
             else:
-                strength+=1
-            if ord(prev1) in [ord(prev2)-1,ord(x),ord(prev2),ord(prev2)+1]:
-                strength-=7
+                strength += 1
+            if ord(prev1) in [ord(prev2)-1, ord(x), ord(prev2), ord(prev2)+1]:
+                strength -= 7
             else:
-                strength+=1
+                strength += 1
 
-        if strength<0:
+        if strength < 0:
             strength = 0
-        elif strength>100:
+        elif strength > 100:
             strength = 100
-            
+
         return f"There's a {100-strength}% probability of your password being cracked."
-                  
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self.orientation = 'vertical'
-        self.add_widget(MyBoxLayout(size_hint_y  = 0.2))
+        self.add_widget(MyBoxLayout(size_hint_y=0.2))
 
         class PassText(MyBoxLayout):
             input = ObjectProperty()
@@ -734,23 +743,28 @@ class Pass(MyBoxLayout):
             def change(self, *args):
                 print('hi')
                 self.input.hint_text = self.parent.check(self.input.text)
-                Clock.schedule_once(lambda dt: setattr(self.input,'focus',True),0.1)
+                Clock.schedule_once(lambda dt: setattr(
+                    self.input, 'focus', True), 0.1)
 
             def __init__(self, **kwargs):
                 super().__init__(**kwargs)
-                self.padding = [dp(30),0,dp(20),0]
+                self.padding = [dp(30), 0, dp(20), 0]
                 self.input = TextField(halign='center',
-                                       password = True)
+                                       password=True)
                 self.icon_button = Icon(icon=self.icon)
                 self.input.bind(on_text_validate=self.change)
-                
+
                 self.input.hint_text = "Type a password and check it's strength"
-                
+
                 self.icon_button.icon = "eye-off"
-                self.icon_button.bind(on_release = lambda button: setattr(button,'icon', "eye" if button.icon == "eye-off" else "eye-off"))
-                self.icon_button.bind(on_release = lambda button: setattr(self.input,'password', False if button.icon == "eye-off" else True))
-                self.input.current_hint_text_color = self.icon_button.text_color[:3]+[0.7]
-                self.input.bind(focus= lambda instance,value: setattr(self.input,'current_hint_text_color', self.icon_button.text_color[:3]+[1 if value else 0.7]))
+                self.icon_button.bind(on_release=lambda button: setattr(
+                    button, 'icon', "eye" if button.icon == "eye-off" else "eye-off"))
+                self.icon_button.bind(on_release=lambda button: setattr(
+                    self.input, 'password', False if button.icon == "eye-off" else True))
+                self.input.current_hint_text_color = self.icon_button.text_color[:3]+[
+                    0.7]
+                self.input.bind(focus=lambda instance, value: setattr(
+                    self.input, 'current_hint_text_color', self.icon_button.text_color[:3]+[1 if value else 0.7]))
                 self.add_widget(self.input)
                 self.add_widget(self.icon_button)
 
@@ -759,14 +773,14 @@ class Pass(MyBoxLayout):
                               size_hint=(0.2, None),
                               height=dp(40),
                               pos_hint={"center_x": 0.5},
-                              modal_button = True,
-                              font_resize = False,
-                              font_size = dp(16))
+                              modal_button=True,
+                              font_resize=False,
+                              font_size=dp(16))
         self.submit.bind(on_release=self.text_box.change)
         self.add_widget(self.text_box)
-        self.add_widget(MyBoxLayout(size_hint_y = 0.3))
+        self.add_widget(MyBoxLayout(size_hint_y=0.3))
         self.add_widget(self.submit)
-        self.add_widget(MyBoxLayout(size_hint_y = 0.5))
+        self.add_widget(MyBoxLayout(size_hint_y=0.5))
 
 
 class ClipButtons(MyBoxLayout):
