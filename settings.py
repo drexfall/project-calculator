@@ -310,9 +310,9 @@ class About(MyBoxLayout):
         )
 
         self.footer = MyBoxLayout()
-        credit_text1 = "[ref=https://www.pexels.com/photo/black-and-grey-casio-scientific-calculator-showing-formula-220301/][b]splash image[/b][/ref] by [ref=https://www.pexels.com/@pixabay][b]Pixabay[/b][/ref] from [ref=https://www.pexels.com/][b]Pexels[/b][/ref]"
-        credit_text2 = "[ref=https://www.iconarchive.com/show/button-ui-system-apps-icons-by-blackvariant/Calculator-icon.html][b]icon[/b][/ref] by [ref=https://www.iconarchive.com/artist/blackvariant.html][b]BlackVariant[/b][/ref] from [ref=https://www.iconarchive.com/][b]IconArchive[/b][/ref]"
-        credit_text3 = "conversion rates by [ref=https://www.fxexchangerate.com/][b]FxexchangeRate[/b][/ref]"
+        credit_text1 = "[ref=https://www.pexels.com/photo/black-and-grey-casio-scientific-calculator-showing-formula-220301/][b]splash image[/b][/ref]"
+        credit_text2 = "[ref=https://www.iconarchive.com/show/button-ui-system-apps-icons-by-blackvariant/Calculator-icon.html][b]app icon[/b][/ref]"
+        credit_text3 = "[ref=https://github.com/fawazahmed0/exchange-api][b]currency API[/b][/ref]"
         self.footer.splash_credit = MLabel(
 
             text=credit_text1+'\n'+credit_text2+'\n'+credit_text3,
@@ -324,25 +324,29 @@ class About(MyBoxLayout):
         )
 
         self.footer.source_code = MLabel(
-            text="[ref=https://www.github.com/shreyash/project-calculator][b]source code here[/b][/ref]",
+            text="[ref=https://www.github.com/shreyash/project-calculator][b]by drexfall[/b][/ref]",
             font_size=dp(self.font_size*0.9),
             valign="bottom",
             halign="center",
             markup=True,
             size_hint=(0.2, 1)
         )
-        self.footer.credits = MLabel(
-            text="Aman Singh (XII-E)\nShreyash Singh (XII-D)\nSuyash Kumar (XII-D)\nVineet Pratap Singh (XII-D)\n[ref=http://dpseldeco.com/][b]Delhi Public School Eldeco[/b][/ref]",
+        social_text1 = "[ref=https://www.instagram.com/drexfall/][b]instagram[/b][/ref]"
+        social_text2 = "[ref=https://in.linkedin.com/in/drexfall/][b]linkedin[/b][/ref]"
+        social_text3 = "[ref=https://www.github.com/drexfall/][b]github[/b][/ref]"
+        self.footer.socials = MLabel(
+
+            text=social_text1 + '\n' + social_text2 + '\n' + social_text3,
             markup=True,
-            font_size=dp(self.font_size*0.9),
-            halign="right",
+            font_size=dp(self.font_size * 0.8),
             valign="bottom",
+            halign="right",
             size_hint=(0.4, 1),
         )
 
         self.footer.add_widget(self.footer.splash_credit)
         self.footer.add_widget(self.footer.source_code)
-        self.footer.add_widget(self.footer.credits)
+        self.footer.add_widget(self.footer.socials)
 
         self.footer.source_code.bind(
             on_ref_press=lambda args, args1: webbrowser.get().open_new_tab(args1)
@@ -353,7 +357,7 @@ class About(MyBoxLayout):
         self.body1.bind(
             on_ref_press=lambda args, args1: webbrowser.get().open_new_tab(args1)
         )
-        self.footer.credits.bind(
+        self.footer.socials.bind(
             on_ref_press=lambda args, args1: webbrowser.get().open_new_tab(args1)
         )
 

@@ -1,0 +1,8 @@
+﻿.idea
+wenv
+config.json
+history.json
+currency.json
+images
+dist
+build

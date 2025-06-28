@@ -15,6 +15,9 @@ try:
 except FileNotFoundError:
     with open("history.json", "w+") as file:
         file.write("{}")
+with open("currency.json", "wb+") as file:
+    response = urlopen("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json")
+    file.write(response.read())
 
 
 def days_number(fdate, tdate):
@@ -69,15 +72,13 @@ def color(file):
 
 def currency_unit_list():
     global convert_unit_currency
-    try:
-        url = parse(urlopen("https://inr.fxexchangerate.com/rss.xml"))
-        for item in url.iterfind("channel/item"):
-            convert_unit_currency.append(
-                str(item.findtext("title").split("/")[1]))
-    except error.URLError as e:
-        if "-2" in str(e.reason):
-            convert_unit_currency.append("No Internet")
-    convert_unit_currency.sort()
+    with open("currency.json", "r") as jsonFile:
+        try:
+            data = json.load(jsonFile)
+        except json.JSONDecodeError:
+            print("Could not decode JSON")
+            data = {}
+    convert_unit_currency = data
 
 
 convert_quantities = (

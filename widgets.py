@@ -61,11 +61,10 @@ class TextField(MDTextField):
 
     def on_focus(self, *args):
         super().on_focus(*args)
-        if not args[1] and str(type(
-                self.parent.parent.parent).__name__) == "ListItem":
+        if not args[1] and str(type(self.parent.parent).__name__) == "ListItem":
             self.parent.parent.parent.parent.selected.update({
                 self.title:
-                int(args[0].text) if self.title != "base" else args[0].text
+                    int(args[0].text) if self.title != "base" else args[0].text
             })
 
     def insert_text(self, substring, from_undo):
@@ -77,7 +76,7 @@ class TextField(MDTextField):
         super().on_text_validate()
 
     def on_text(self, instance, text):
-        super(TextField, self).on_text(instance, text)
+        # super(TextField, self).on_text(instance, text)
         if self.parent == None:
             return
         if str(type(self.parent.parent.parent).__name__) == "ListItem":
@@ -106,7 +105,7 @@ class TextField(MDTextField):
             f"images/{theme_image[config_data['theme']][0]}.png")
         self.text_color = color(
             f"images/{theme_image[config_data['theme']][1]}.png")
-        
+
         self.line_color_focus = color(
             f"images/{theme_image[config_data['theme']][1]}.png")
         self.error_color = self.line_color_focus
@@ -226,7 +225,6 @@ class ListItem(TwoLineAvatarIconListItem):
 
 
 class MButton(TouchRippleButtonBehavior, Button):
-
     background_disabled_normal = StringProperty(
         f"images/{theme_image[config_data['theme']][2]}.png")
     background_down = StringProperty(
@@ -289,7 +287,6 @@ class MButton(TouchRippleButtonBehavior, Button):
             self.ripple_fade()
 
             def defer_release(dt):
-
                 self.dispatch("on_release")
 
             Clock.schedule_once(defer_release, self.ripple_duration_out)
@@ -300,7 +297,7 @@ class MButton(TouchRippleButtonBehavior, Button):
         if self.state == "down":
             return
         if not hover[
-                0] and not self.modal_button or self.disabled or not self.hover:
+            0] and not self.modal_button or self.disabled or not self.hover:
             self.background_normal = self.old_image
             self.color = self.color_
             return
@@ -491,20 +488,19 @@ class Text(TextInput):
              and substring not in string.digits + "%()+-x÷^.!=\r\n" + string.ascii_letters
              and not substring.isdecimal()
              and substring != "^2") or
-            (current_page[0] == "scientific"
-             and substring not in string.digits + "%()e+-x÷^.!sincotae=\r\n"
-             and substring != "^2" and substring
-             not in ['sin', 'cos', 'tan', 'cosec', 'cot', 'sec', 'log']
-             and substring not in [
-                 'sin\u00af\u00b9', 'cos\u00af\u00b9', 'tan\u00af\u00b9',
-                 'cosec\u00af\u00b9', 'cot\u00af\u00b9', 'sec\u00af\u00b9'
-            ] and substring != str(config_data['base'] + '^')
-            and substring != '\u03c0')
+                (current_page[0] == "scientific"
+                 and substring not in string.digits + "%()e+-x÷^.!sincotae=\r\n"
+                 and substring != "^2" and substring
+                 not in ['sin', 'cos', 'tan', 'cosec', 'cot', 'sec', 'log']
+                 and substring not in [
+                     'sin\u00af\u00b9', 'cos\u00af\u00b9', 'tan\u00af\u00b9',
+                     'cosec\u00af\u00b9', 'cot\u00af\u00b9', 'sec\u00af\u00b9'
+                 ] and substring != str(config_data['base'] + '^')
+                 and substring != '\u03c0')
                 or (current_page[0] == "convert"
                     and substring not in string.digits + ".=\r\n")
                 or (current_page[0] == "days"
                     and substring not in string.digits + "=\r\n")):
-
             return
 
         self.last_press = substring
@@ -532,13 +528,13 @@ class Text(TextInput):
                     if re.findall("[0-9]", self.text):
                         return
                     if self.text.count('.') == 0 and self.text.isalpha:
-                        self.text = "www."+self.text+".com"
+                        self.text = "www." + self.text + ".com"
                         link = True
                     elif self.text.count('.') == 1:
                         if 'www' in self.text:
                             self.text += ".com"
                         else:
-                            self.text = "www."+self.text
+                            self.text = "www." + self.text
                         link = True
 
                     if self.text.count('.') == 2 or link:
@@ -550,7 +546,7 @@ class Text(TextInput):
                     return
             self.page.old_text = self.text
             self.page.preview.text = "[ref=self.old_text]" + \
-                self.text + "[/ref]"
+                                     self.text + "[/ref]"
 
             if current_page[0] == "standard":
                 substring = self.text
@@ -573,9 +569,9 @@ class Text(TextInput):
                 for r in ["sin", "tan", "cos", "cot", "cosec", "sec"]:
                     substring = substring.replace(r, f"Basic(rad={rad}).{r}")
                 for r in [
-                        "sin\u00af\u00b9", "tan\u00af\u00b9",
-                        "cos\u00af\u00b9", "cot\u00af\u00b9",
-                        "cosec\u00af\u00b9", "sec\u00af\u00b9"
+                    "sin\u00af\u00b9", "tan\u00af\u00b9",
+                    "cos\u00af\u00b9", "cot\u00af\u00b9",
+                    "cosec\u00af\u00b9", "sec\u00af\u00b9"
                 ]:
                     r1 = r.replace("\u00af\u00b9", "")
                     substring = substring.replace(r, f"a{r1}")
@@ -599,7 +595,7 @@ class Text(TextInput):
                     substring = (str(
                         eval("Convert." + self.quantity)
                         (self.text.split()[0], self.from_unit, self.to_unit)) +
-                        " " + self.to_unit)
+                                 " " + self.to_unit)
                     self.page.preview.text = ("[ref=self.old_text]" +
                                               self.text + " " +
                                               self.from_unit + "[/ref]")
@@ -711,14 +707,14 @@ class Pass(MyBoxLayout):
             if not len(regex):
                 strength -= 20
         for index, x in enumerate(text):
-            prev1 = text[index-1 if index > 1 else 0] if len(text) > 0 else ''
-            prev2 = text[index-2 if index > 2 else 0] if len(prev1) > 0 else ''
+            prev1 = text[index - 1 if index > 1 else 0] if len(text) > 0 else ''
+            prev2 = text[index - 2 if index > 2 else 0] if len(prev1) > 0 else ''
 
-            if ord(x) in [ord(prev1)-1, ord(prev1), ord(prev2), ord(prev1)+1]:
+            if ord(x) in [ord(prev1) - 1, ord(prev1), ord(prev2), ord(prev1) + 1]:
                 strength -= 8
             else:
                 strength += 1
-            if ord(prev1) in [ord(prev2)-1, ord(x), ord(prev2), ord(prev2)+1]:
+            if ord(prev1) in [ord(prev2) - 1, ord(x), ord(prev2), ord(prev2) + 1]:
                 strength -= 7
             else:
                 strength += 1
@@ -728,7 +724,7 @@ class Pass(MyBoxLayout):
         elif strength > 100:
             strength = 100
 
-        return f"There's a {100-strength}% probability of your password being cracked."
+        return f"There's a {100 - strength}% probability of your password being cracked."
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -741,7 +737,6 @@ class Pass(MyBoxLayout):
             icon = StringProperty()
 
             def change(self, *args):
-                print('hi')
                 self.input.hint_text = self.parent.check(self.input.text)
                 Clock.schedule_once(lambda dt: setattr(
                     self.input, 'focus', True), 0.1)
@@ -761,10 +756,10 @@ class Pass(MyBoxLayout):
                     button, 'icon', "eye" if button.icon == "eye-off" else "eye-off"))
                 self.icon_button.bind(on_release=lambda button: setattr(
                     self.input, 'password', False if button.icon == "eye-off" else True))
-                self.input.current_hint_text_color = self.icon_button.text_color[:3]+[
+                self.input.current_hint_text_color = self.icon_button.text_color[:3] + [
                     0.7]
                 self.input.bind(focus=lambda instance, value: setattr(
-                    self.input, 'current_hint_text_color', self.icon_button.text_color[:3]+[1 if value else 0.7]))
+                    self.input, 'current_hint_text_color', self.icon_button.text_color[:3] + [1 if value else 0.7]))
                 self.add_widget(self.input)
                 self.add_widget(self.icon_button)
 
@@ -830,18 +825,17 @@ class MLabel(Label):
 
 
 class Date(MDDatePicker):
-
     button = ObjectProperty()
 
     def on_dismiss(self, *args):
         if args:
-            date = args[0].strftime(config_data["format"])
+            date = args[1].strftime(config_data["format"])
             self.button.text = date
         self.button.parent.parent.parent.parent.parent.parent.parent.parent.options_close(
         )
-
     def __init__(self, **kwargs):
-        super(Date, self).__init__(**kwargs, callback=self.on_dismiss)
+        super(Date, self).__init__(**kwargs)
+        self.bind(on_save=self.on_dismiss)
 
 
 class SwipeHover(RelativeLayout):
@@ -887,13 +881,11 @@ class SwipeHover(RelativeLayout):
         self.text = MLabel(
             text=self.title,
             font_size=0,
-            padding=[0, dp(40)],
             color=color(f"images/{theme_image[config_data['theme']][2]}.png")
-            [:3] + [0],
+                  [:3] + [0],
         )
 
         self.select = MDCheckbox(
-            size_hint=(0, 0),
             pos_hint={
                 "center_x": 0.5,
                 "center_y": -0.5
@@ -938,7 +930,6 @@ class Swiper(MDSwiperItem, HoverBehavior):
         Animation(
             font_size=dp(0),
             color=self.layout.text.color[:3] + [0],
-            padding=[0, dp(40)],
             duration=0.5,
             t="in_out_sine",
         ).start(self.layout.text)
@@ -946,7 +937,6 @@ class Swiper(MDSwiperItem, HoverBehavior):
             pos_hint={
                 "center_y": -0.5
             },
-            size_hint=(0, 0),
             duration=0.8,
             t="in_out_cubic",
         ).start(self.layout.select)
@@ -976,7 +966,6 @@ class Swiper(MDSwiperItem, HoverBehavior):
         Animation(
             font_size=dp(30),
             color=self.layout.text.color[:3] + [1],
-            padding=[0, 0],
             duration=0.8,
             t="in_out_sine",
         ).start(self.layout.text)
@@ -984,7 +973,6 @@ class Swiper(MDSwiperItem, HoverBehavior):
             pos_hint={
                 "center_y": 0.3
             },
-            size_hint=(0.2, 0.3),
             duration=0.8,
             t="in_out_cubic",
         ).start(self.layout.select)

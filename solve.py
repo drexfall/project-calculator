@@ -1,22 +1,21 @@
+import json
 import math
-from decimal import Decimal
+import re
+from decimal import Decimal, Context
 import urllib
 from urllib.request import urlopen
 from xml.etree.ElementTree import parse
 
 
-def xmlurl(inunit, outunit):
+def xmlurl(inUnit, outUnit):
+    rate = None
     try:
-        var_url = urlopen("https://" + inunit + ".fxexchangerate.com/rss.xml")
-    except urllib.error.HTTPError:
-        return "Input Unit is Invalid!"
-    xmldoc = parse(var_url)
-    for item in xmldoc.iterfind("channel/item"):
-        if outunit.upper() in item.findtext("title"):
-            exrate = item.findtext("description").split()
-            return Decimal(exrate[exrate.index("=") + 1])
-
-    return "Output Unit is Invalid!"
+        response = urlopen(f"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/{inUnit}.json")
+        rates = json.loads(response.read())
+        rate = Decimal(rates[inUnit][outUnit])
+    except Exception as e:
+        print(e)
+    return rate.quantize(Decimal('0.0001')) if rate else None
 
 
 class Matrix:

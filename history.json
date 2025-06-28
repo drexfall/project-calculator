@@ -1,1 +1,51 @@
-{}
+{
+    "28/06/2025 23:41:16": [
+        {
+            "67 aed": "0.0737 aave"
+        },
+        "convert",
+        "underscore-win device"
+    ],
+    "28/06/2025 23:43:33": [
+        {
+            "200 inr": "8.5800 aed"
+        },
+        "convert",
+        "underscore-win device"
+    ],
+    "28/06/2025 23:43:49": [
+        {
+            "120 inr": "5.1480 aed"
+        },
+        "convert",
+        "underscore-win device"
+    ],
+    "28/06/2025 23:43:54": [
+        {
+            "25 inr": "1.0725 aed"
+        },
+        "convert",
+        "underscore-win device"
+    ],
+    "28/06/2025 23:50:36": [
+        {
+            "56+89": "145"
+        },
+        "standard",
+        "underscore-win device"
+    ],
+    "28/06/2025 23:59:37": [
+        {
+            "06/28/2025 to 06/28/2025": "0"
+        },
+        "days",
+        "underscore-win device"
+    ],
+    "29/06/2025 00:14:44": [
+        {
+            "06/02/2025 to 06/29/2025": "27"
+        },
+        "days",
+        "underscore-win device"
+    ]
+}
